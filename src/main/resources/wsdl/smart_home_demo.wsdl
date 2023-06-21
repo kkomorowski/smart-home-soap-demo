@@ -40,7 +40,13 @@
                 </xsd:sequence>
             </xsd:complexType>
 
-            <xsd:element name="GetSmartHomeDevicesRequest"/>
+            <xsd:element name="GetSmartHomeDevicesRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Type" type="tns:DeviceTypeEnum" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
 
             <xsd:element name="GetSmartHomeDevicesResponse">
                 <xsd:complexType>
