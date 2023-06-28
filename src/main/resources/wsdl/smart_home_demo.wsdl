@@ -1,12 +1,12 @@
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
                   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-                  xmlns:tns="https://soap.hiquality.dev/smart-home"
+                  xmlns:tns="https://soap.hiquality.dev/smarthome"
                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                  targetNamespace="https://soap.hiquality.dev/smart-home">
+                  targetNamespace="https://soap.hiquality.dev/smarthome">
 
     <wsdl:types>
-        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://soap.hiquality.dev/smart-home"
-                    xmlns:tns="https://soap.hiquality.dev/smart-home">
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://soap.hiquality.dev/smarthome"
+                    xmlns:tns="https://soap.hiquality.dev/smarthome">
 
             <xsd:simpleType name="UUID">
                 <xsd:restriction base="xsd:string">
@@ -14,75 +14,122 @@
                 </xsd:restriction>
             </xsd:simpleType>
 
-            <xsd:simpleType name="DeviceTypeEnum">
+            <xsd:simpleType name="DeviceType">
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="Door"/>
                     <xsd:enumeration value="Window"/>
-                    <xsd:enumeration value="Lightbulb"/>
+                    <xsd:enumeration value="Fridge"/>
                 </xsd:restriction>
             </xsd:simpleType>
 
-            <xsd:simpleType name="StatusEnum">
+            <xsd:simpleType name="Status">
                 <xsd:restriction base="xsd:string">
-                    <xsd:enumeration value="on"/>
-                    <xsd:enumeration value="off"/>
                     <xsd:enumeration value="open"/>
                     <xsd:enumeration value="closed"/>
                 </xsd:restriction>
             </xsd:simpleType>
 
-            <xsd:complexType name="DeviceType">
+            <xsd:complexType name="Device">
                 <xsd:sequence>
                     <xsd:element name="ID" type="tns:UUID"/>
                     <xsd:element name="Name" type="xsd:string"/>
-                    <xsd:element name="Type" type="tns:DeviceTypeEnum"/>
-                    <xsd:element name="Status" type="tns:StatusEnum"/>
+                    <xsd:element name="Type" type="tns:DeviceType"/>
+                    <xsd:element name="Status" type="tns:Status"/>
+                    <xsd:element name="Secret" type="xsd:hexBinary" minOccurs="0"/>
                 </xsd:sequence>
             </xsd:complexType>
 
-            <xsd:element name="GetSmartHomeDevicesRequest">
+            <xsd:simpleType name="ExecutionStatus">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="OK"/>
+                    <xsd:enumeration value="FAILED"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+            <xsd:complexType name="BaseResponseType">
+                <xsd:sequence>
+                    <xsd:element name="ExecutionStatus" type="tns:ExecutionStatus"/>
+                    <xsd:element name="Message" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="GetDevicesRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="Type" type="tns:DeviceTypeEnum" minOccurs="0"/>
+                        <xsd:element name="Type" type="tns:DeviceType" minOccurs="0"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
 
-            <xsd:element name="GetSmartHomeDevicesResponse">
+            <xsd:element name="GetDevicesResponse">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="Devices" type="tns:DeviceType" minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element name="DeviceList">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="Device" type="tns:Device" minOccurs="0" maxOccurs="unbounded"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
                     </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="RegisterDeviceRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Device" type="tns:Device"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="RegisterDeviceResponse">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="tns:BaseResponseType"/>
+                    </xsd:complexContent>
                 </xsd:complexType>
             </xsd:element>
 
             <xsd:element name="DeviceStatusChange">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="DeviceID" type="tns:UUID"/>
-                        <xsd:element name="NewStatus" type="tns:StatusEnum"/>
+                        <xsd:element name="ID" type="tns:UUID"/>
+                        <xsd:element name="Status" type="tns:Status"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
         </xsd:schema>
     </wsdl:types>
 
-    <wsdl:message name="GetSmartHomeDevicesRequest">
-        <wsdl:part name="parameters" element="tns:GetSmartHomeDevicesRequest"/>
+    <wsdl:message name="GetDevicesRequest">
+        <wsdl:part name="parameters" element="tns:GetDevicesRequest"/>
     </wsdl:message>
 
-    <wsdl:message name="GetSmartHomeDevicesResponse">
-        <wsdl:part name="parameters" element="tns:GetSmartHomeDevicesResponse"/>
+    <wsdl:message name="GetDevicesResponse">
+        <wsdl:part name="parameters" element="tns:GetDevicesResponse"/>
     </wsdl:message>
 
     <wsdl:message name="DeviceStatusChangeNotification">
         <wsdl:part name="parameters" element="tns:DeviceStatusChange"/>
     </wsdl:message>
 
+    <wsdl:message name="RegisterDeviceRequest">
+        <wsdl:part name="parameters" element="tns:RegisterDeviceRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="RegisterDeviceResponse">
+        <wsdl:part name="parameters" element="tns:RegisterDeviceResponse"/>
+    </wsdl:message>
+
     <wsdl:portType name="SmartHomePortType">
-        <wsdl:operation name="GetSmartHomeDevices">
-            <wsdl:input message="tns:GetSmartHomeDevicesRequest"/>
-            <wsdl:output message="tns:GetSmartHomeDevicesResponse"/>
+        <wsdl:operation name="GetDevices">
+            <wsdl:input message="tns:GetDevicesRequest"/>
+            <wsdl:output message="tns:GetDevicesResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="RegisterDevice">
+            <wsdl:input message="tns:RegisterDeviceRequest"/>
+            <wsdl:output message="tns:RegisterDeviceResponse"/>
         </wsdl:operation>
     </wsdl:portType>
 
@@ -94,8 +141,17 @@
 
     <wsdl:binding name="SmartHomeBinding" type="tns:SmartHomePortType">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-        <wsdl:operation name="GetSmartHomeDevices">
-            <soap:operation soapAction="https://soap.hiquality.dev/smart-home/GetSmartHomeDevices"/>
+        <wsdl:operation name="GetDevices">
+            <soap:operation soapAction="https://soap.hiquality.dev/smarthome/GetDevices"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="RegisterDevice">
+            <soap:operation soapAction="https://soap.hiquality.dev/smarthome/RegisterDevice"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>

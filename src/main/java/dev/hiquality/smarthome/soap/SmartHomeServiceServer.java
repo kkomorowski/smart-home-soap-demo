@@ -1,6 +1,7 @@
 package dev.hiquality.smarthome.soap;
 
 import dev.hiquality.smarthome.soap.service.SmartHomeServiceImpl;
+import org.apache.cxf.feature.LoggingFeature;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 
 public class SmartHomeServiceServer {
@@ -15,6 +16,7 @@ public class SmartHomeServiceServer {
         factoryBean.setServiceClass(SmartHomePortType.class);
         factoryBean.setAddress(address);
         factoryBean.setServiceBean(serviceImpl);
+        factoryBean.getFeatures().add(new LoggingFeature());
 
         // Create the server and start it
         factoryBean.create();
