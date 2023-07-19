@@ -17,6 +17,7 @@ public class SmartHomeServiceServer {
         factoryBean.setAddress(address);
         factoryBean.setServiceBean(serviceImpl);
         factoryBean.getFeatures().add(new LoggingFeature());
+        factoryBean.getHandlers().add(new SoapHandler());
 
         // Create the server and start it
         factoryBean.create();

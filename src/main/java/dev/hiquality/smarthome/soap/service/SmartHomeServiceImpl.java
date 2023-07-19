@@ -11,7 +11,7 @@ public class SmartHomeServiceImpl implements SmartHomePortType {
     private final List<Device> devices = new ArrayList<>(
             List.of(
                 deviceType(DeviceType.WINDOW, UUID.fromString("cafebabe-0000-0000-0000-000000000001"), "Window #1", Status.OPEN, "CAFEBABE"),
-                deviceType(DeviceType.DOOR, UUID.fromString("cafebabe-0000-0000-0000-000000000002"), "Door #1", Status.CLOSED, "CAFEBABE")
+                deviceType(DeviceType.DOOR, UUID.fromString("cafebabe-0000-0000-0000-000000000002"), "Door #1", Status.CLOSED, "BABECAFE")
             ));
 
     private Device deviceType(DeviceType type, UUID uuid, String name, Status status, String secret) {
@@ -49,13 +49,14 @@ public class SmartHomeServiceImpl implements SmartHomePortType {
     public RegisterDeviceResponse registerDevice(RegisterDeviceRequest parameters) {
         var device = parameters.getDevice();
         var response = new RegisterDeviceResponse();
-        if (device != null) {
+        if (devices.stream().filter(d -> d.getID().equals(device.getID())).findFirst().isEmpty()) {
             devices.add(device);
             response.setExecutionStatus(ExecutionStatus.OK);
+            response.setMessage("Device added!");
         }
         else {
             response.setExecutionStatus(ExecutionStatus.FAILED);
-            response.setMessage("Device data not present!");
+            response.setMessage("Device with id: " + device.getID() + " already present!");
         }
         return response;
     }

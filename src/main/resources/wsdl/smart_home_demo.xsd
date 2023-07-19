@@ -1,0 +1,96 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://soap.hiquality.dev/smarthome"
+            xmlns:tns="https://soap.hiquality.dev/smarthome">
+
+
+    <xsd:simpleType name="UUID">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="DeviceType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Door"/>
+            <xsd:enumeration value="Window"/>
+            <xsd:enumeration value="Fridge"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="Status">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="open"/>
+            <xsd:enumeration value="closed"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="Device">
+        <xsd:sequence>
+            <xsd:element name="ID" type="tns:UUID"/>
+            <xsd:element name="Name" type="xsd:string"/>
+            <xsd:element name="Type" type="tns:DeviceType"/>
+            <xsd:element name="Status" type="tns:Status"/>
+            <xsd:element name="Secret" type="xsd:hexBinary" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="ExecutionStatus">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OK"/>
+            <xsd:enumeration value="FAILED"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="BaseResponseType">
+        <xsd:sequence>
+            <xsd:element name="ExecutionStatus" type="tns:ExecutionStatus"/>
+            <xsd:element name="Message" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="GetDevicesRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Type" type="tns:DeviceType" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetDevicesResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="DeviceList">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Device" type="tns:Device" minOccurs="0" maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="RegisterDeviceRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Device" type="tns:Device"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="RegisterDeviceResponse">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="tns:BaseResponseType"/>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="DeviceStatusChange">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="ID" type="tns:UUID"/>
+                <xsd:element name="Status" type="tns:Status"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
